@@ -1,0 +1,65 @@
+{
+    "____comment": "This file was generated with eosio-abigen. DO NOT EDIT ",
+    "version": "eosio::abi/1.1",
+    "types": [],
+    "structs": [
+        {
+            "name": "addobs",
+            "base": "",
+            "fields": [
+                {
+                    "name": "pressure",
+                    "type": "uint64"
+                },
+                {
+                    "name": "temperature",
+                    "type": "float32"
+                },
+                {
+                    "name": "humidity",
+                    "type": "float32"
+                },
+                {
+                    "name": "miner",
+                    "type": "name"
+                }
+            ]
+        },
+        {
+            "name": "observations",
+            "base": "",
+            "fields": [
+                {
+                    "name": "pressure_hpa",
+                    "type": "uint64"
+                },
+                {
+                    "name": "temperature_c",
+                    "type": "float32"
+                },
+                {
+                    "name": "relHumidity",
+                    "type": "float32"
+                }
+            ]
+        }
+    ],
+    "actions": [
+        {
+            "name": "addobs",
+            "type": "addobs",
+            "ricardian_contract": ""
+        }
+    ],
+    "tables": [
+        {
+            "name": "observations",
+            "type": "observations",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        }
+    ],
+    "ricardian_clauses": [],
+    "variants": []
+}
