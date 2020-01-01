@@ -1,0 +1,6 @@
+# wxlaunch
+
+An eosio smart contract containing this code will:
+- Contain weather balloon observations for exactly ONE launch
+- Hold pressure, temperature, and relative humidity data
+- Reward a miner with eosio digital currency upon first observation below 300hPa
