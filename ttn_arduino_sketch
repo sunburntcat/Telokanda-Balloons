@@ -1,0 +1,96 @@
+#include <TheThingsNetwork.h>
+#include <LoraMessage.h>
+#include <LoraEncoder.h>
+#include <Adafruit_Sensor.h>
+#include <Adafruit_BME280.h>
+    
+#define loraSerial Serial1
+#define debugSerial Serial
+#define freqPlan TTN_FP_US915
+
+const char *appEui = <your value here>
+const char *appKey = <your value here>
+
+const char *devAddr = <your value here>
+const char *nwkSKey = <your value here>
+const char *appSKey = <your value here>
+    
+TheThingsNetwork ttn(loraSerial, debugSerial, freqPlan);
+Adafruit_BME280 bme;
+
+int DEBUG = 1;
+
+void debugPrintField(String str, float fieldValue) {
+  if (DEBUG) { 
+    debugSerial.println(str);
+    debugSerial.println(fieldValue);
+    debugSerial.println("");
+  }
+}
+
+void debugPrintMessage(String str){
+  if (DEBUG) { 
+    debugSerial.println(str);
+  }
+}
+    
+void setup() {
+  loraSerial.begin(57600);
+  
+  if (DEBUG) { 
+    debugSerial.begin(9600);
+
+    // Wait 10 sec for serial debug monitor over USB
+    while (!debugSerial && millis() < 10000);
+  }
+      
+  // Init output pins
+  pinMode(LED_BUILTIN, OUTPUT);
+  pinMode(SDA, OUTPUT);
+  pinMode(SCL, OUTPUT);
+    
+  //debugSerial.println("-- STATUS");
+  ttn.showStatus();
+
+  //debugSerial.println("-- JOIN");
+  ttn.join(appEui, appKey); // Join using OTAA
+  //ttn.personalize(devAddr, nwkSKey, appSKey); // Join using ABP
+
+  if (!bme.begin(0x76)) {
+    debugPrintMessage("Could not find valid BME280 sensor, check wiring.");
+    while(1);
+  }
+}
+
+
+void loop() {
+
+  //debugSerial.println("-- LOOP");
+  debugPrintMessage("-- LOOP");
+      
+  delay(10000); //10 second delay
+
+  float pressure = bme.readPressure();
+  //uint16_t pressure = 980;
+  debugPrintField("Pressure (Pa):", pressure);
+
+  float temperature = bme.readTemperature();
+  //float temperature = 8.0;
+  debugPrintField("Temperature (Celcius)", temperature);
+
+  float rel_hum = bme.readHumidity();
+  //float rel_hum = 55.0;
+  debugPrintField("Relative humidity (percent)", rel_hum);
+
+  // Pack our data into encoded message
+  LoraMessage message;
+  message
+    .addUint16(pressure)
+    .addTemperature(temperature)
+    .addHumidity(rel_hum);
+
+  // Send our message
+  debugPrintMessage("-- SEND");
+  ttn.sendBytes(message.getBytes(), message.getLength());
+  
+}
