@@ -21,9 +21,9 @@ w = 0.62197 * ( e / (p2-e));
 
 // Calculate Tv in kelvin
 t2 = msg.payload.tempC + 273.15;
-tv2 = (1+(0.61*w))*t;
+tv2 = (1+(0.61*w))*t2;
 
-// Check if the first observation exists
+// Check that the first observation exists
 if (context.get(msg.devid+'.z1')||0)
 {
     // Get previous layers' values
@@ -38,22 +38,16 @@ if (context.get(msg.devid+'.z1')||0)
     R = 287.058; // specific gas constant dry air
     g = 9.80664; // gravitational acceleration
     z2 = (R*tv/g)*Math.log(p1/p2) + z1;
-
-    // Store values for next iteration
-    context.set(msg.devid+'.p1', p2);
-    context.set(msg.devid+'.tv1', tv2);
-    context.set(msg.devid+'.z1', z2);
-
-    msg.payload.zElevation = z2;
-    return msg;
     
 } else { // First field doesn't exist
 
-    // Simply store values for next iteration
-    context.set(msg.devid+'.p1', p2);
-    context.set(msg.devid+'.tv1', tv2);
-    context.set(msg.devid+'.z1', 1.0); // 1 meter above ground
-    
-    msg.payload.zElevation = 1.0;
-    return msg;
+    z2 = 1.0 // 1 meter above the surface
 }
+
+// Store values for next iteration
+context.set(msg.devid+'.p1', p2);
+context.set(msg.devid+'.tv1', tv2);
+context.set(msg.devid+'.z1', z2);
+
+msg.payload.zElevation = z2;
+return msg;
