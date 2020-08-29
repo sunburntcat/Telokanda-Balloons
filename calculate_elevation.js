@@ -14,7 +14,7 @@
 // Set initial values
 p = msg.payload.p;
 tDewC = msg.payload.tDewC;
-t = msg.payload.tempC + 273.15;
+t = msg.payload.tempC + 273.15; // Convert temperature to Kelvin
 
 // Calculate actual vapor pressure
 e = 6.112*Math.pow(10,(7.5*tDewC)/(237.7+tDewC));
