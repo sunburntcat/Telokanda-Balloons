@@ -11,17 +11,19 @@
 //    Copy and paste this code into a node-red "function" node,
 //      and provide it with Catena 4610 outputs
 
-// Calculate actual vapor pressure
+// Set initial values
+p = msg.payload.p;
 tDewC = msg.payload.tDewC;
+t = msg.payload.tempC + 273.15;
+
+// Calculate actual vapor pressure
 e = 6.112*Math.pow(10,(7.5*tDewC)/(237.7+tDewC));
 
 // Calculate mixing ratio
-p2 = msg.payload.p;
-w = 0.62197 * ( e / (p2-e));
+w = 0.62197 * ( e / (p-e));
 
 // Calculate Tv in kelvin
-t2 = msg.payload.tempC + 273.15;
-tv2 = (1+(0.61*w))*t2;
+tv2 = (1+(0.61*w))*t;
 
 // Check that the first observation exists
 if (context.get(msg.devid+'.z1')||0)
@@ -37,7 +39,7 @@ if (context.get(msg.devid+'.z1')||0)
     // Do thickness calculation
     R = 287.058; // specific gas constant dry air
     g = 9.80664; // gravitational acceleration
-    z2 = (R*tv/g)*Math.log(p1/p2) + z1;
+    z2 = (R*tv/g)*Math.log(p1/p) + z1;
     
 } else { // First field doesn't exist
 
@@ -45,7 +47,7 @@ if (context.get(msg.devid+'.z1')||0)
 }
 
 // Store values for next iteration
-context.set(msg.devid+'.p1', p2);
+context.set(msg.devid+'.p1', p);
 context.set(msg.devid+'.tv1', tv2);
 context.set(msg.devid+'.z1', z2);
 
